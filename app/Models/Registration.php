@@ -26,4 +26,5 @@ class Registration extends Model
     {
         return $this->belongsTo(Opportunity::class);
     }
+    
 }

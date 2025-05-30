@@ -72,6 +72,22 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::put('profile', [ProfileController::class, 'update'])->name('profile.update');
 });
 
+Route::prefix('org')->middleware('auth:organization')->group(function () {
+    Route::get('/dashboard', [App\Http\Controllers\Org\DashboardController::class, 'index'])->name('org.dashboard');
+
+    Route::get('/opportunities/create', [App\Http\Controllers\Org\OpportunityController::class, 'create'])->name('org.opportunities.create');
+    Route::post('/opportunities', [App\Http\Controllers\Org\OpportunityController::class, 'store'])->name('org.opportunities.store');
+    Route::get('/opportunities', [App\Http\Controllers\Org\OpportunityController::class, 'index'])->name('org.opportunities.index');
+    Route::get('/opportunities/{id}/edit', [App\Http\Controllers\Org\OpportunityController::class, 'edit'])->name('org.opportunities.edit');
+    Route::put('/opportunities/{id}', [App\Http\Controllers\Org\OpportunityController::class, 'update'])->name('org.opportunities.update');
+    Route::delete('/opportunities/{id}', [App\Http\Controllers\Org\OpportunityController::class, 'destroy'])->name('org.opportunities.destroy');
+
+    Route::get('/registrations', [App\Http\Controllers\Org\RegistrationController::class, 'index'])->name('org.registrations.index');
+
+    Route::get('/profile', [App\Http\Controllers\Org\ProfileController::class, 'edit'])->name('org.profile.edit');
+    Route::put('/profile', [App\Http\Controllers\Org\ProfileController::class, 'update'])->name('org.profile.update');
+});
+
 
 
 require __DIR__.'/auth.php';

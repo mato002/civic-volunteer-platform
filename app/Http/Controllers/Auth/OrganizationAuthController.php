@@ -27,6 +27,8 @@ class OrganizationAuthController extends Controller
 
         if (Auth::guard('organization')->attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
+
+            // Redirect to intended URL or org dashboard
             return redirect()->intended(route('org.dashboard'));
         }
 
@@ -59,7 +61,8 @@ class OrganizationAuthController extends Controller
 
         Auth::guard('organization')->login($organization);
 
-        return redirect(route('org.dashboard'));
+        // Redirect to org dashboard after registration
+        return redirect()->intended(route('org.dashboard'));
     }
 
     // Handle logout
@@ -70,6 +73,6 @@ class OrganizationAuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect('organization/login');
     }
 }

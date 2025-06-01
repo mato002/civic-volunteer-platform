@@ -8,12 +8,12 @@ use Illuminate\Http\Request;
 
 class VolunteerOpportunityController extends Controller
 {
-    public function index()
-    {
-        // Fetch all volunteer opportunities
-        $opportunities = Opportunity::all();
-        return view('volunteer.opportunities.index', compact('opportunities'));
-    }
+public function index()
+{
+    // Eager load organization to avoid N+1 query problem
+    $opportunities = Opportunity::with('organization')->get();
+    return view('volunteer.opportunities.index', compact('opportunities'));
+}
 
     public function show($id)
     {

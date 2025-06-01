@@ -2,28 +2,41 @@
 
 namespace App\Models;
 
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class Registration extends Model
+class Organization extends Authenticatable
 {
-    use HasFactory;
+    use HasFactory, Notifiable;
 
     protected $fillable = [
-        'volunteer_id',
-        'opportunity_id',
-        'status',  // e.g. pending, approved, rejected
+        'name',
+        'email',
+        'phone',
+        'address',
+        'password',
     ];
 
-    // Registration belongs to Volunteer
-    public function volunteer()
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    // Relations
+    public function opportunities()
     {
-        return $this->belongsTo(Volunteer::class);
+        return $this->hasMany(Opportunity::class);
     }
 
-    // Registration belongs to an Opportunity
-    public function opportunity()
+    public function registrations()
     {
-        return $this->belongsTo(Opportunity::class);
+        return $this->hasManyThrough(Registration::class, Opportunity::class);
+    }
+
+    // Optional: feedbacks through opportunities if needed
+    public function feedbacks()
+    {
+        return $this->hasManyThrough(Feedback::class, Opportunity::class);
     }
 }

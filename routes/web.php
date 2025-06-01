@@ -88,6 +88,25 @@ Route::prefix('org')->middleware('auth:organization')->group(function () {
     Route::put('/profile', [App\Http\Controllers\Org\ProfileController::class, 'update'])->name('org.profile.update');
 });
 
+use App\Http\Controllers\Volunteer\VolunteerDashboardController;
+use App\Http\Controllers\Volunteer\VolunteerOpportunityController;
+use App\Http\Controllers\Volunteer\VolunteerRegistrationController;
+use App\Http\Controllers\Volunteer\VolunteerFeedbackController;
+use App\Http\Controllers\Volunteer\VolunteerProfileController;
+
+Route::prefix('volunteer')->middleware(['auth:volunteer'])->group(function () {
+    Route::get('/dashboard', [VolunteerDashboardController::class, 'index'])->name('volunteer.dashboard');
+    
+    Route::resource('opportunities', VolunteerOpportunityController::class)->names('volunteer.opportunities');
+    
+    Route::resource('registrations', VolunteerRegistrationController::class)->names('volunteer.registrations');
+    
+    Route::resource('feedback', VolunteerFeedbackController::class)->names('volunteer.feedback');
+    
+    Route::get('/profile', [VolunteerProfileController::class, 'index'])->name('volunteer.profile');
+    Route::put('profile', [VolunteerProfileController::class, 'update'])->name('volunteer.profile.update');
+
+});
 
 
 require __DIR__.'/auth.php';

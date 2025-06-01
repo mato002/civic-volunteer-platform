@@ -13,7 +13,7 @@ class OpportunityController extends Controller
     public function index()
     {
         $orgId = Auth::id(); // Assuming org user is authenticated
-        $opportunities = Opportunity::where('organization_id', $orgId)->orderBy('date', 'desc')->get();
+        $opportunities = Opportunity::where('organization_id', $orgId)->orderBy('start_date', 'desc')->get();
 
         return view('org.opportunities.index', compact('opportunities'));
     }

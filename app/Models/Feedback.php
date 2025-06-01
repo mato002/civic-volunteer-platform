@@ -2,26 +2,24 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Registration extends Model
+class Feedback extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
         'volunteer_id',
         'opportunity_id',
-        'status',  // e.g. pending, approved, rejected
+        'rating',
+        'comments',
     ];
 
-    // Registration belongs to Volunteer
+    // Feedback belongs to Volunteer
     public function volunteer()
     {
         return $this->belongsTo(Volunteer::class);
     }
 
-    // Registration belongs to an Opportunity
+    // Feedback belongs to Opportunity
     public function opportunity()
     {
         return $this->belongsTo(Opportunity::class);

@@ -16,18 +16,16 @@ class Opportunity extends Model
         'end_date',
         'location',
         'organization_id',
-        'status', // e.g. active, closed
+        'status',
     ];
 
-    // Opportunity belongs to an Organization
     public function organization()
     {
-        return $this->belongsTo(Organization::class);
+        return $this->belongsTo(\App\Models\Organization::class);
     }
 
-    // Opportunity has many registrations (volunteers signed up)
     public function registrations()
     {
-        return $this->hasMany(Registration::class);
+        return $this->hasMany(\App\Models\Registration::class);
     }
 }

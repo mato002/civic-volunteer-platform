@@ -1,15 +1,10 @@
-<?php
-// This is a standalone registration view that can be saved as register.blade.php
-// It uses Laravel's authentication system but doesn't extend any layout
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Organization Registration</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <style>
         body {
             background-color: #f8f9fa;
@@ -50,7 +45,8 @@
             <h4>Organization Registration</h4>
         </div>
         <div class="card-body">
-            <form method="POST" action="/org/register">
+            <form method="POST" action="/organization/register">
+                @csrf
                 <div class="mb-3">
                     <label for="name" class="form-label">Organization Name</label>
                     <input 
@@ -58,7 +54,12 @@
                       class="form-control" 
                       id="name" 
                       name="name" 
-                      required>
+                      required
+                      value="{{ old('name') }}"
+                    >
+                    @error('name')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="mb-3">
@@ -68,7 +69,12 @@
                       class="form-control" 
                       id="email" 
                       name="email" 
-                      required>
+                      required
+                      value="{{ old('email') }}"
+                    >
+                    @error('email')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="mb-3">
@@ -78,7 +84,11 @@
                       class="form-control" 
                       id="password" 
                       name="password" 
-                      required>
+                      required
+                    >
+                    @error('password')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="mb-3">
@@ -88,7 +98,8 @@
                       class="form-control" 
                       id="password_confirmation" 
                       name="password_confirmation" 
-                      required>
+                      required
+                    >
                 </div>
 
                 <button type="submit" class="btn btn-success w-100">Register</button>

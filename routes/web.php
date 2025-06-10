@@ -107,15 +107,23 @@ Route::prefix('volunteer')->middleware(['auth:volunteer'])->group(function () {
     Route::get('/dashboard', [VolunteerDashboardController::class, 'index'])->name('volunteer.dashboard');
     
     Route::resource('opportunities', VolunteerOpportunityController::class)->names('volunteer.opportunities');
+    Route::post('/opportunities/{opportunity}/apply', [VolunteerOpportunityController::class, 'apply'])->name('volunteer.opportunities.apply');
+
     
     Route::resource('registrations', VolunteerRegistrationController::class)->names('volunteer.registrations');
+    Route::delete('/registrations/{registration}/cancel', [VolunteerRegistrationController::class, 'cancel'])->name('volunteer.registrations.cancel');
+
     
     Route::resource('feedback', VolunteerFeedbackController::class)->names('volunteer.feedback');
     
+    // Profile Routes
     Route::get('/profile', [VolunteerProfileController::class, 'index'])->name('volunteer.profile');
-    Route::put('profile', [VolunteerProfileController::class, 'update'])->name('volunteer.profile.update');
-
+    Route::put('/profile', [VolunteerProfileController::class, 'update'])->name('volunteer.profile.update');
+    Route::post('/profile/picture', [VolunteerProfileController::class, 'updatePicture'])->name('volunteer.profile.picture');
+    Route::put('/skills', [VolunteerProfileController::class, 'updateSkills'])->name('volunteer.skills.update');
+    Route::put('/password', [VolunteerProfileController::class, 'updatePassword'])->name('volunteer.password.update');
+    Route::post('/2fa/enable', [VolunteerProfileController::class, 'enable2FA'])->name('volunteer.2fa.enable');
+    Route::post('/2fa/disable', [VolunteerProfileController::class, 'disable2FA'])->name('volunteer.2fa.disable');
 });
-
 
 require __DIR__.'/auth.php';

@@ -33,5 +33,14 @@ class Volunteer extends Authenticatable
     {
         return $this->hasMany(Feedback::class);
     }
+        public function opportunities()
+    {
+        return $this->belongsToMany(Opportunity::class, 'registrations')
+                    ->withPivot('status')
+                    ->withTimestamps();
+    }
+
+
+
 
 }

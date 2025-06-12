@@ -2,132 +2,569 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Organization Dashboard</title>
+    <title>Organization Dashboard | OrganizersHub</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <!-- Tailwind CSS via CDN (fallback if not using build system) -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        .sidebar-link.active {
-            background-color: #f0fdf4;
-            border-left: 4px solid #16a34a;
-            color: #16a34a;
+        :root {
+            --primary-color: #4361ee;
+            --primary-hover: #3a56d4;
+            --secondary-color: #3f37c9;
+            --accent-color: #4895ef;
+            --dark-color: #2b2d42;
+            --light-color: #f8f9fa;
+            --success-color: #4cc9f0;
+            --warning-color: #f8961e;
+            --danger-color: #f72585;
+            --sidebar-width: 280px;
+            --sidebar-collapsed-width: 80px;
+            --header-height: 70px;
+            --transition-speed: 0.3s;
+            --border-radius: 8px;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f7fa;
+            color: #4a4a4a;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        
+        /* App Layout */
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--dark-color) 0%, #1a1c2e 100%);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            transition: all var(--transition-speed) ease;
+            box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+        }
+        
+        .sidebar.collapsed {
+            width: var(--sidebar-collapsed-width);
+        }
+        
+        .sidebar-brand {
+            padding: 1.5rem 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            min-height: var(--header-height);
+        }
+        
+        .sidebar-brand h4 {
+            font-weight: 600;
+            color: white;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+        
+        .sidebar-brand .logo-icon {
+            margin-right: 12px;
+            color: var(--accent-color);
+            font-size: 1.5rem;
+        }
+        
+        .sidebar-toggle {
+            cursor: pointer;
+            font-size: 1.25rem;
+            color: rgba(255, 255, 255, 0.7);
+            transition: all var(--transition-speed) ease;
+        }
+        
+        .sidebar-toggle:hover {
+            color: white;
+        }
+        
+        .sidebar.collapsed .sidebar-toggle {
+            transform: rotate(180deg);
+        }
+        
+        .sidebar-nav {
+            list-style: none;
+            padding: 1rem 0;
+            margin: 0;
+        }
+        
+        .sidebar-nav a {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 0.75rem 1.5rem;
+            margin: 0.25rem 0.75rem;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            transition: all var(--transition-speed) ease;
+            border-radius: var(--border-radius);
             font-weight: 500;
+            white-space: nowrap;
         }
-        .sidebar-link:hover:not(.active) {
-            background-color: #f8fafc;
+        
+        .sidebar-nav a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            transform: translateX(3px);
         }
-        .profile-dropdown {
+        
+        .sidebar-nav a.active {
+            background-color: rgba(255, 255, 255, 0.15);
+            color: white;
+            box-shadow: inset 3px 0 0 var(--accent-color);
+        }
+        
+        .sidebar-nav i {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+        
+        /* Collapsed sidebar styles */
+        .sidebar.collapsed .sidebar-brand h4 span {
             display: none;
         }
-        .profile-container:hover .profile-dropdown {
-            display: block;
+        
+        .sidebar.collapsed .sidebar-nav a {
+            justify-content: center;
+            padding: 0.75rem;
+            margin: 0.25rem;
         }
+        
+        .sidebar.collapsed .sidebar-nav i {
+            margin-right: 0;
+            font-size: 1.3rem;
+        }
+        
+        .sidebar.collapsed .sidebar-nav a span {
+            display: none;
+        }
+        
+        /* Tooltip for collapsed sidebar */
+        .sidebar.collapsed .sidebar-nav li {
+            position: relative;
+        }
+        
+        .sidebar.collapsed .sidebar-nav li:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: var(--dark-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            font-size: 0.875rem;
+            white-space: nowrap;
+            z-index: 1001;
+            margin-left: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            pointer-events: none;
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: margin-left var(--transition-speed) ease;
+        }
+        
+        .sidebar.collapsed ~ .main-content {
+            margin-left: var(--sidebar-collapsed-width);
+        }
+        
+        /* Header Styles */
+        .header {
+            height: var(--header-height);
+            background: white;
+            padding: 0 1.5rem;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-title {
+            font-weight: 600;
+            color: var(--dark-color);
+            margin: 0;
+            font-size: 1.25rem;
+        }
+        
+        /* Profile Dropdown */
+        .profile-dropdown {
+            position: relative;
+        }
+        
+        .profile-toggle {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 0.5rem 0.75rem;
+            border-radius: 50px;
+            transition: all 0.2s;
+        }
+        
+        .profile-toggle:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+        
+        .profile-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .profile-name {
+            font-weight: 500;
+            margin-right: 8px;
+            transition: all var(--transition-speed) ease;
+        }
+        
+        .sidebar.collapsed ~ .main-content .profile-name {
+            display: none;
+        }
+        
+        .profile-dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: calc(100% + 5px);
+            background-color: white;
+            min-width: 200px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.2s ease;
+        }
+        
+        .profile-dropdown:hover .profile-dropdown-menu {
+            display: block;
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .dropdown-header {
+            padding: 0.75rem 1rem;
+            background-color: var(--light-color);
+            font-weight: 600;
+            font-size: 0.875rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .dropdown-item {
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            color: #555;
+            text-decoration: none;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+        }
+        
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+            color: var(--primary-color);
+        }
+        
+        .dropdown-item i {
+            margin-right: 10px;
+            width: 18px;
+            text-align: center;
+        }
+        
+        .dropdown-divider {
+            border-top: 1px solid #e0e0e0;
+            margin: 0.25rem 0;
+        }
+        
+        /* Content Area */
+        .content-area {
+            padding: 1.5rem;
+            flex-grow: 1;
+            background-color: #f5f7fa;
+        }
+        
+        /* Cards */
+        .card {
+            border: none;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            background-color: white;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Buttons */
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            border-color: var(--primary-hover);
+        }
+        
+        /* Responsive Adjustments */
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+                z-index: 1100;
+            }
+            
+            .sidebar.visible {
+                transform: translateX(0);
+            }
+            
+            .mobile-menu-toggle {
+                display: block !important;
+            }
+            
+            .main-content {
+                margin-left: 0 !important;
+            }
+            
+            .profile-name {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .content-area {
+                padding: 1rem;
+            }
+            
+            .header {
+                padding: 0 1rem;
+            }
+        }
+        
+        /* Animation for sidebar items */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .sidebar-nav li {
+            animation: fadeIn 0.3s ease forwards;
+            opacity: 0;
+        }
+        
+        .sidebar-nav li:nth-child(1) { animation-delay: 0.1s; }
+        .sidebar-nav li:nth-child(2) { animation-delay: 0.15s; }
+        .sidebar-nav li:nth-child(3) { animation-delay: 0.2s; }
+        .sidebar-nav li:nth-child(4) { animation-delay: 0.25s; }
+        .sidebar-nav li:nth-child(5) { animation-delay: 0.3s; }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen font-sans antialiased">
-
-    <!-- Top Navigation Bar -->
-    <header class="bg-white shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <!-- Left side - Logo/Branding -->
-                <div class="flex items-center">
-                    <span class="text-green-600 font-bold text-xl">OrganizersHub</span>
-                </div>
-
-                <!-- Right side - Profile & Actions -->
-                <div class="flex items-center space-x-4">
-                    <!-- Notifications -->
-                    <button class="p-1 rounded-full text-gray-500 hover:text-gray-700 focus:outline-none">
-                        <i class="fas fa-bell"></i>
-                        <span class="sr-only">Notifications</span>
-                    </button>
-
-                    <!-- Profile dropdown -->
-                    <div class="relative profile-container">
-                        <button class="flex items-center space-x-2 focus:outline-none">
-                            <div class="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center text-green-600">
-                                <i class="fas fa-building"></i>
-                            </div>
-                            <span class="text-sm font-medium text-gray-700">Org Name</span>
-                            <i class="fas fa-chevron-down text-xs text-gray-500"></i>
-                        </button>
-
-                        <div class="profile-dropdown absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
-                            <a href="{{ route('org.profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                <i class="fas fa-cog mr-2"></i>Settings
-                            </a>
-                            <form action="{{ route('logout') }}" method="POST">
-                                @csrf
-                                <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
-                                    <i class="fas fa-sign-out-alt mr-2"></i>Logout
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <div class="flex">
+<body>
+    <div class="app-container">
         <!-- Sidebar -->
-        <aside class="w-64 bg-white shadow-md min-h-[calc(100vh-4rem)] hidden md:block">
-            <nav class="p-4 space-y-1 mt-4">
-                <a href="{{ route('org.dashboard') }}" class="sidebar-link flex items-center px-4 py-3 rounded-lg transition-all">
-                    <i class="fas fa-tachometer-alt mr-3 text-gray-500"></i>
-                    Dashboard
-                </a>
-                <a href="{{ route('org.opportunities.create') }}" class="sidebar-link flex items-center px-4 py-3 rounded-lg transition-all">
-                    <i class="fas fa-plus-circle mr-3 text-gray-500"></i>
-                    Post Opportunities
-                </a>
-                <a href="{{ route('org.opportunities.index') }}" class="sidebar-link flex items-center px-4 py-3 rounded-lg transition-all">
-                    <i class="fas fa-tasks mr-3 text-gray-500"></i>
-                    Manage Opportunities
-                </a>
-                <a href="{{ route('org.registrations.index') }}" class="sidebar-link flex items-center px-4 py-3 rounded-lg transition-all">
-                    <i class="fas fa-users mr-3 text-gray-500"></i>
-                    View Registrations
-                </a>
-                    <a href="{{ route('org.settings.index') }}" class="sidebar-link flex items-center px-4 py-3 rounded-lg transition-all">
-                    <i class="fas fa-users mr-3 text-gray-500"></i>
-                    Settings
-                </a>
-            </nav>
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <h4><i class="fas fa-hands-helping logo-icon"></i> <span>OrganizersHub</span></h4>
+                <i class="fas fa-chevron-left sidebar-toggle" id="sidebarToggle"></i>
+            </div>
+            <ul class="sidebar-nav">
+                <li data-tooltip="Dashboard">
+                    <a href="{{ route('org.dashboard') }}" class="{{ request()->routeIs('org.dashboard') ? 'active' : '' }}">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li data-tooltip="Post Opportunities">
+                    <a href="{{ route('org.opportunities.create') }}" class="{{ request()->routeIs('org.opportunities.create') ? 'active' : '' }}">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>Post Opportunities</span>
+                    </a>
+                </li>
+                <li data-tooltip="Manage Opportunities">
+                    <a href="{{ route('org.opportunities.index') }}" class="{{ request()->routeIs('org.opportunities.index') ? 'active' : '' }}">
+                        <i class="fas fa-tasks"></i>
+                        <span>Manage Opportunities</span>
+                    </a>
+                </li>
+                <li data-tooltip="View Registrations">
+                    <a href="{{ route('org.registrations.index') }}" class="{{ request()->routeIs('org.registrations.index') ? 'active' : '' }}">
+                        <i class="fas fa-users"></i>
+                        <span>View Registrations</span>
+                    </a>
+                </li>
+                <li data-tooltip="Settings">
+                    <a href="{{ route('org.settings.index') }}" class="{{ request()->routeIs('org.settings.index') ? 'active' : '' }}">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                </li>
+            </ul>
         </aside>
 
         <!-- Main Content -->
-        <main class="flex-1 p-6">
-            <div class="bg-white rounded-lg shadow-sm p-6">
-                @yield('content')
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-sm btn-outline-secondary me-3 d-lg-none mobile-menu-toggle" id="mobileSidebarToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="header-title">@yield('title', 'Organization Dashboard')</h1>
+                </div>
+                <div class="profile-dropdown">
+                    <div class="profile-toggle">
+                        <div class="profile-avatar">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <span class="profile-name">Org Name</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="profile-dropdown-menu">
+                        <div class="dropdown-header">Organization Account</div>
+                        <a href="{{ route('org.profile.edit') }}" class="dropdown-item">
+                            <i class="fas fa-cog"></i> Settings
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <form action="{{ route('logout') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="w-full text-left dropdown-item text-red-600">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </button>
+                        </form>
+                    </div>
+                </div>
             </div>
-        </main>
+
+            <!-- Page Content -->
+            <div class="content-area">
+                <div class="card">
+                    <div class="card-body">
+                        @yield('content')
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer class="bg-white border-t mt-8 py-4">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-gray-500">
+                    &copy; {{ date('Y') }} OrganizersHub. All rights reserved.
+                </div>
+            </footer>
+        </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="bg-white border-t mt-8 py-4">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-gray-500">
-            &copy; {{ date('Y') }} VolunteerHub. All rights reserved.
-        </div>
-    </footer>
-
-    <!-- Simple JavaScript for active link highlighting -->
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
     <script>
+        // Toggle sidebar
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const mobileSidebarToggle = document.getElementById('mobileSidebarToggle');
+        
+        // Toggle sidebar collapse
+        function toggleSidebar() {
+            sidebar.classList.toggle('collapsed');
+            
+            // Save state in localStorage
+            const isCollapsed = sidebar.classList.contains('collapsed');
+            localStorage.setItem('sidebarCollapsed', isCollapsed);
+        }
+        
+        // Toggle mobile sidebar visibility
+        function toggleMobileSidebar() {
+            sidebar.classList.toggle('visible');
+        }
+        
+        // Initialize sidebar state
+        function initSidebar() {
+            const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+            if (isCollapsed) {
+                sidebar.classList.add('collapsed');
+            }
+            
+            // Check screen size and adjust sidebar
+            if (window.innerWidth < 992) {
+                sidebar.classList.add('collapsed');
+                sidebar.classList.remove('visible');
+            }
+        }
+        
+        // Event listeners
+        sidebarToggle.addEventListener('click', toggleSidebar);
+        mobileSidebarToggle.addEventListener('click', toggleMobileSidebar);
+        
+        // Close mobile sidebar when clicking outside
+        document.addEventListener('click', function(e) {
+            if (window.innerWidth < 992 && 
+                !sidebar.contains(e.target) && 
+                !mobileSidebarToggle.contains(e.target)) {
+                sidebar.classList.remove('visible');
+            }
+        });
+        
+        // Initialize on load
+        window.addEventListener('load', initSidebar);
+        window.addEventListener('resize', initSidebar);
+        
+        // Add active class to current route
         document.addEventListener('DOMContentLoaded', function() {
             const currentPath = window.location.pathname;
-            const links = document.querySelectorAll('.sidebar-link');
+            const navLinks = document.querySelectorAll('.sidebar-nav a');
             
-            links.forEach(link => {
+            navLinks.forEach(link => {
                 if (link.getAttribute('href') === currentPath) {
                     link.classList.add('active');
-                    link.querySelector('i').classList.replace('text-gray-500', 'text-green-600');
                 }
             });
         });
     </script>
+    
+    @stack('scripts')
 </body>
 </html>
